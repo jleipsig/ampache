@@ -494,7 +494,7 @@ class JSON_Data
 
         $allPodcasts = [];
         foreach ($podcasts as $podcast_id) {
-            $podcast = new Share($podcast_id);
+            $podcast = new Podcast($podcast_id);
             $podcast->format();
             $podcast_name           = $podcast->f_name;
             $podcast_user           = $podcast->f_user;
