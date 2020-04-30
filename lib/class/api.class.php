@@ -1847,7 +1847,7 @@ class Api
         }
         $description = $input['description'];
         $object_id   = $input['filter'];
-        $object_type = $input['album'];
+        $object_type = $input['type'];
         $download    = Access::check_function('download');
         $expire_days = Share::get_expiry($input['expires']);
         // confirm the correct data
