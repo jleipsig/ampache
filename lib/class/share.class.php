@@ -440,7 +440,7 @@ class Share extends database_object
      * @param integer $days
      * @return integer
      */
-    public function get_expiry($days = null)
+    public static function get_expiry($days = null)
     {
         if (isset($days)) {
             $expires = $days;
