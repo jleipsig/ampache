@@ -2261,12 +2261,12 @@ class Api
             case 'json':
                 JSON_Data::set_offset($input['offset']);
                 JSON_Data::set_limit($input['limit']);
-                echo JSON_Data::podcast_episodes($items, $user->id);
+                echo JSON_Data::podcast_episodes($items);
                 break;
             default:
                 XML_Data::set_offset($input['offset']);
                 XML_Data::set_limit($input['limit']);
-                echo XML_Data::podcast_episodes($items, $user->id);
+                echo XML_Data::podcast_episodes($items);
         }
         Session::extend($input['auth']);
 
