@@ -3061,38 +3061,25 @@ class Api
      * Get information about catalogs this user is allowed to manage.
      *
      * @param array $input
-     * filter = (string) Alpha-numeric search term
      * offset = (integer) //optional
      * limit  = (integer) //optional
      * @return bool
      */
     public static function catalogs($input)
     {
-        if (!self::check_parameter($input, array('filter'), 'catalogs')) {
-            return false;
-        }
-        self::$browse->reset_filters();
-        self::$browse->set_type('catalog');
-        self::$browse->set_sort('title', 'ASC');
-
-        $method = $input['exact'] ? 'exact_match' : 'alpha_match';
-        self::set_filter($method, $input['filter']);
-        self::set_filter('add', $input['add']);
-        self::set_filter('update', $input['update']);
-
-        $shares = self::$browse->get_objects();
+        $catalogs = Catalog::get_catalogs();
 
         ob_end_clean();
         switch ($input['format']) {
             case 'json':
                 JSON_Data::set_offset($input['offset']);
                 JSON_Data::set_limit($input['limit']);
-                echo JSON_Data::catalogs($shares);
+                echo JSON_Data::catalogs($catalogs);
                 break;
             default:
                 XML_Data::set_offset($input['offset']);
                 XML_Data::set_limit($input['limit']);
-                echo XML_Data::catalogs($shares);
+                echo XML_Data::catalogs($catalogs);
         }
         Session::extend($input['auth']);
     } // catalogs

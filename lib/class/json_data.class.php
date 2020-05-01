@@ -497,12 +497,12 @@ class JSON_Data
             $catalog->format();
             $catalog_name           = $catalog->name;
             $catalog_type           = $catalog->catalog_type;
+            $catalog_gather_types   = $catalog->gather_types;
             $catalog_enabled        = $catalog->enabled;
             $catalog_last_add       = $catalog->f_add;
             $catalog_last_clean     = $catalog->f_clean;
             $catalog_last_update    = $catalog->f_update;
             $catalog_link           = $catalog->link;
-            $catalog_gather_types   = $catalog->gather_types;
             $catalog_rename_pattern = $catalog->rename_pattern;
             $catalog_sort_pattern   = $catalog->sort_pattern;
             // Build this element
@@ -510,12 +510,12 @@ class JSON_Data
                 "id" => $catalog_id,
                 "name" => $catalog_name,
                 "type" => $catalog_type,
+                "gather_types" => $catalog_gather_types,
                 "last_add" => $catalog_enabled,
                 "allow_download" => $catalog_last_add,
                 "last_clean" => $catalog_last_clean,
                 "last_update" => $catalog_last_update,
                 "link" => $catalog_link,
-                "gather_types" => $catalog_gather_types,
                 "rename_pattern" => $catalog_rename_pattern,
                 "sort_pattern" => $catalog_sort_pattern]);
         } // end foreach
