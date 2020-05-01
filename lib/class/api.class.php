@@ -2243,21 +2243,21 @@ class Api
      * Takes the file id with optional description and expires parameters.
      *
      * @param array $input
-     * filter      = (string) object_id
-     * type        = (string) object_type
-     * description = (string) description (will be filled for you if empty) //optional
-     * expires     = (integer) days to keep active //optional
+     * url     = (string) rss url for podcast
+     * catalog = (string) podcast catalog
      */
     public static function podcast_create($input)
     {
         if (!self::check_parameter($input, array('type', 'filter'), 'podcast_create')) {
             return false;
         }
-        if (!AmpConfig::get('share')) {
-            self::message('error', T_('Access Denied: sharing features are not enabled.'), '400', $input['format']);
+        if (!AmpConfig::get('podcast')) {
+            self::message('error', T_('Access Denied: podcast features are not enabled.'), '400', $input['format']);
 
             return false;
         }
+        $data['feed']    = $url;
+        $data['catalog'] = $catalogs[0];
         $description = $input['description'];
         $object_id   = $input['filter'];
         $object_type = $input['type'];
@@ -2307,8 +2307,8 @@ class Api
         if (!self::check_parameter($input, array('type', 'filter'), 'podcast_delete')) {
             return false;
         }
-        if (!AmpConfig::get('share')) {
-            self::message('error', T_('Access Denied: sharing features are not enabled.'), '400', $input['format']);
+        if (!AmpConfig::get('podcast')) {
+            self::message('error', T_('Access Denied: podcast features are not enabled.'), '400', $input['format']);
 
             return false;
         }
@@ -2343,8 +2343,8 @@ class Api
         if (!self::check_parameter($input, array('filter'), 'podcast_edit')) {
             return false;
         }
-        if (!AmpConfig::get('share')) {
-            self::message('error', T_('Access Denied: sharing features are not enabled.'), '400', $input['format']);
+        if (!AmpConfig::get('podcast')) {
+            self::message('error', T_('Access Denied: podcast features are not enabled.'), '400', $input['format']);
 
             return false;
         }
@@ -3069,6 +3069,77 @@ class Api
 
         return true;
     } // scrobble
+
+    /**
+     * catalogs
+     * MINIMUM_API_VERSION=400005
+     *
+     * Get information about catalogs this user is allowed to manage.
+     *
+     * @param array $input
+     * filter = (string) Alpha-numeric search term
+     * offset = (integer) //optional
+     * limit  = (integer) //optional
+     * @return bool
+     */
+    public static function catalogs($input)
+    {
+        if (!self::check_parameter($input, array('filter'), 'catalogs')) {
+            return false;
+        }
+        self::$browse->reset_filters();
+        self::$browse->set_type('catalog');
+        self::$browse->set_sort('title', 'ASC');
+
+        $method = $input['exact'] ? 'exact_match' : 'alpha_match';
+        self::set_filter($method, $input['filter']);
+        self::set_filter('add', $input['add']);
+        self::set_filter('update', $input['update']);
+
+        $shares = self::$browse->get_objects();
+
+        ob_end_clean();
+        switch ($input['format']) {
+            case 'json':
+                JSON_Data::set_offset($input['offset']);
+                JSON_Data::set_limit($input['limit']);
+                echo JSON_Data::shares($shares);
+                break;
+            default:
+                XML_Data::set_offset($input['offset']);
+                XML_Data::set_limit($input['limit']);
+                echo XML_Data::shares($shares);
+        }
+        Session::extend($input['auth']);
+    } // catalogs
+
+    /**
+     * catalog
+     * MINIMUM_API_VERSION=400005
+     *
+     * Get the catalogs from it's id.
+     *
+     * @param array $input
+     * filter = (integer) Share ID number
+     * @return bool
+     */
+    public static function catalog($input)
+    {
+        if (!self::check_parameter($input, array('filter'), 'catalog')) {
+            return false;
+        }
+        $share = array((int) $input['filter']);
+
+        ob_end_clean();
+        switch ($input['format']) {
+            case 'json':
+                echo JSON_Data::catalogs($share);
+                break;
+            default:
+                echo XML_Data::catalogs($share);
+        }
+        Session::extend($input['auth']);
+    } // catalog
 
     /**
      * catalog_action
