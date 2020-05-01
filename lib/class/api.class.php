@@ -1890,11 +1890,11 @@ class Api
      * Delete an existing share.
      *
      * @param array $input
-     * filter = (string) Alpha-numeric search term //optional
+     * filter = (string) UID of share to delete
      */
     public static function share_delete($input)
     {
-        if (!self::check_parameter($input, array('type', 'filter'), 'share_delete')) {
+        if (!self::check_parameter($input, array('filter'), 'share_delete')) {
             return false;
         }
         if (!AmpConfig::get('share')) {
@@ -1922,7 +1922,7 @@ class Api
      * Takes the share id to update with optional description and expires parameters.
      *
      * @param array $input
-     * filter      = (string) Alpha-numeric search term //optional
+     * filter      = (string) Alpha-numeric search term
      * stream      = (bool) 0|1 // optional
      * download    = (bool) 0|1 // optional
      * expires     = (integer) number of whole days before expiry // optional
@@ -2248,7 +2248,7 @@ class Api
      */
     public static function podcast_create($input)
     {
-        if (!self::check_parameter($input, array('type', 'filter'), 'podcast_create')) {
+        if (!self::check_parameter($input, array('url', 'catalog'), 'podcast_create')) {
             return false;
         }
         if (!AmpConfig::get('podcast')) {
@@ -2256,38 +2256,21 @@ class Api
 
             return false;
         }
-        $data['feed']    = $url;
-        $data['catalog'] = $catalogs[0];
-        $description = $input['description'];
-        $object_id   = $input['filter'];
-        $object_type = $input['type'];
-        $download    = Access::check_function('download');
-        $expire_days = Share::get_expiry($input['expires']);
-        // confirm the correct data
-        if (!in_array($object_type, array('song', 'album', 'artist'))) {
-            self::message('error', T_('Wrong object type ' . $object_type), '401', $input['format']);
-
-            return false;
-        }
-        $share = array();
-        if (!Core::is_library_item($object_type) || !$object_id) {
-            self::message('error', T_('Wrong library item type'), '401', $input['format']);
-        } else {
-            $item = new $object_type($object_id);
-            if (!$item->id) {
-                self::message('error', T_('Library item not found'), '404', $input['format']);
-
-                return false;
+        $data = array();
+        $data['feed'] = $input['url'];
+        $data['catalog'] = $input['catalog'];
+        $podcast = Podcast::create($data);
+        if ($podcast) {
+            ob_end_clean();
+            switch ($input['format']) {
+                case 'json':
+                    echo JSON_Data::podcasts($podcast);
+                    break;
+                default:
+                    echo XML_Data::podcasts($podcast);
             }
-            $share[] = Share::create_share($object_type, $object_id, true, $download, $expire_days, generate_password(8), 0, $description);
-        }
-        ob_end_clean();
-        switch ($input['format']) {
-            case 'json':
-                echo JSON_Data::shares($share);
-                break;
-            default:
-                echo XML_Data::shares($share);
+        } else {
+            self::message('error', T_('Failed: podcast was not created.'), '401', $input['format']);
         }
         Session::extend($input['auth']);
     } // podcast_create
@@ -2297,14 +2280,14 @@ class Api
      *
      * MINIMUM_API_VERSION=400005
      *
-     * Delete an existing share.
+     * Delete an existing podcast.
      *
      * @param array $input
-     * filter = (string) Alpha-numeric search term //optional
+     * filter = (string) UID of podcast to delete
      */
     public static function podcast_delete($input)
     {
-        if (!self::check_parameter($input, array('type', 'filter'), 'podcast_delete')) {
+        if (!self::check_parameter($input, array('filter'), 'podcast_delete')) {
             return false;
         }
         if (!AmpConfig::get('podcast')) {
@@ -2313,14 +2296,15 @@ class Api
             return false;
         }
         $object_id = $input['filter'];
-        if (in_array($object_id, Share::get_share_list())) {
-            if (Share::delete_share($object_id)) {
-                self::message('success', 'share ' . $object_id . ' deleted', null, $input['format']);
+        $podcast   = new Podcast($object_id);
+        if ($podcast->id > 0) {
+            if ($podcast->remove()) {
+                self::message('success', 'podcast ' . $object_id . ' deleted', null, $input['format']);
             } else {
-                self::message('error', 'share ' . $object_id . ' was not deleted', '401', $input['format']);
+                self::message('error', 'podcast ' . $object_id . ' was not deleted', '401', $input['format']);
             }
         } else {
-            self::message('error', 'share ' . $object_id . ' was not found', '404', $input['format']);
+            self::message('error', 'podcast ' . $object_id . ' was not found', '404', $input['format']);
         }
         Session::extend($input['auth']);
     } // podcast_delete
@@ -3103,12 +3087,12 @@ class Api
             case 'json':
                 JSON_Data::set_offset($input['offset']);
                 JSON_Data::set_limit($input['limit']);
-                echo JSON_Data::shares($shares);
+                echo JSON_Data::catalogs($shares);
                 break;
             default:
                 XML_Data::set_offset($input['offset']);
                 XML_Data::set_limit($input['limit']);
-                echo XML_Data::shares($shares);
+                echo XML_Data::catalogs($shares);
         }
         Session::extend($input['auth']);
     } // catalogs
