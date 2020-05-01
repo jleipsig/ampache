@@ -2335,10 +2335,10 @@ class Api
         $podcast_id = $input['filter'];
         if (in_array($podcast_id, Share::get_share_list())) {
             $podcast       = new Share($podcast_id);
-            $description = isset($input['description']) ? $input['description'] : $podcast->description;
-            $stream      = isset($input['stream']) ? $input['stream'] : $podcast->allow_stream;
-            $download    = isset($input['download']) ? $input['download'] : $podcast->allow_download;
-            $expires     = isset($input['expires']) ? podcast::get_expiry($input['expires']) : $podcast->expire_days;
+            $description   = isset($input['description']) ? $input['description'] : $podcast->description;
+            $stream        = isset($input['stream']) ? $input['stream'] : $podcast->allow_stream;
+            $download      = isset($input['download']) ? $input['download'] : $podcast->allow_download;
+            $expires       = isset($input['expires']) ? podcast::get_expiry($input['expires']) : $podcast->expire_days;
 
             $data = array(
                 'max_counter' => $podcast->max_counter,
@@ -3383,7 +3383,7 @@ class Api
         if (!self::check_parameter($input, array('filter'), 'update_podcast')) {
             return false;
         }
-        $uid  = scrub_in($input['filter']);
+        $uid     = scrub_in($input['filter']);
         $podcast = new Podcast($uid);
         if ($podcast->sync_episodes()) {
             self::message('success', 'Synced episodes for podcast: ' . (string) $uid, null, $input['format']);
