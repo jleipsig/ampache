@@ -30,7 +30,7 @@ Check the php manual for help making your desired string. ([<https://www.php.net
   * podcast_edit: edit an existing podcast
   * podcast_delete: delete an existing podcast
   * update_podcast: sync and download new episodes
-  * catalogs: get AL: the catalogs
+  * catalogs: get all the catalogs
   * catalog: get a catalog by id
 * NEW db options
   * cron_cache: Speed up the interface by allowing background caching of data
