@@ -2256,10 +2256,10 @@ class Api
 
             return false;
         }
-        $data = array();
-        $data['feed'] = $input['url'];
+        $data            = array();
+        $data['feed']    = $input['url'];
         $data['catalog'] = $input['catalog'];
-        $podcast = Podcast::create($data);
+        $podcast         = Podcast::create($data);
         if ($podcast) {
             ob_end_clean();
             switch ($input['format']) {
