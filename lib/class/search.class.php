@@ -39,7 +39,7 @@ class Search extends playlist_object
     public $last_count     = 0;
 
     public $operators;
-    public $fields;
+    public $searchfields;
 
     public $link;
     public $f_link;
@@ -71,7 +71,7 @@ class Search extends playlist_object
         // Define our operators
         $this->populate_operators();
 
-        $this->fields = array();
+        $this->searchfields = array();
         switch ($searchtype) {
             case 'song':
                 $this->populate_song_fields();
@@ -356,7 +356,7 @@ class Search extends playlist_object
      */
     private function popuplate_time_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'time',
             'label' => T_('Length (in minutes)'),
             'type' => 'numeric',
@@ -371,7 +371,7 @@ class Search extends playlist_object
      */
     private function populate_artistrating_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'artistrating',
             'label' => T_('My Rating (Artist)'),
             'type' => 'numeric',
@@ -395,7 +395,7 @@ class Search extends playlist_object
      */
     private function populate_albumrating_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'albumrating',
             'label' => T_('My Rating (Album)'),
             'type' => 'numeric',
@@ -419,7 +419,7 @@ class Search extends playlist_object
      */
     private function populate_image_height_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'image height',
             'label' => T_('Image Height'),
             'type' => 'numeric',
@@ -434,7 +434,7 @@ class Search extends playlist_object
      */
     private function populate_image_width_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'image width',
             'label' => T_('Image Width'),
             'type' => 'numeric',
@@ -449,7 +449,7 @@ class Search extends playlist_object
      */
     private function populate_last_play_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'last_play',
             'label' => T_('My Last Play'),
             'type' => 'days',
@@ -464,7 +464,7 @@ class Search extends playlist_object
      */
     private function populate_rating_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'rating',
             'label' => T_('Rating (Average)'),
             'type' => 'numeric',
@@ -488,7 +488,7 @@ class Search extends playlist_object
      */
     private function populate_myrating_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'myrating',
             'label' => T_('My Rating'),
             'type' => 'numeric',
@@ -512,7 +512,7 @@ class Search extends playlist_object
      */
     private function populate_played_times_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'played_times',
             /* HINT: Number of times object has been played */
             'label' => T_('# Played'),
@@ -528,7 +528,7 @@ class Search extends playlist_object
      */
     private function populate_favorite_field()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'favorite',
             'label' => T_('Favorites'),
             'type' => 'text',
@@ -543,42 +543,42 @@ class Search extends playlist_object
      */
     private function populate_song_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'anywhere',
             'label' => T_('Any searchable text'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'title',
             'label' => T_('Title'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'album',
             'label' => T_('Album'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'artist',
             'label' => T_('Artist'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'composer',
             'label' => T_('Composer'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'year',
             'label' => T_('Year'),
             'type' => 'numeric',
@@ -592,28 +592,28 @@ class Search extends playlist_object
             $this->populate_artistrating_field();
         }
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'tag',
             'label' => T_('Tag'),
             'type' => 'tags',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'album_tag',
             'label' => T_('Album tag'),
             'type' => 'tags',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'artist_tag',
             'label' => T_('Artist tag'),
             'type' => 'tags',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'file',
             'label' => T_('Filename'),
             'type' => 'text',
@@ -628,14 +628,14 @@ class Search extends playlist_object
 
         $this->populate_played_times_field();
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'comment',
             'label' => T_('Comment'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'label',
             'label' => T_('Label'),
             'type' => 'text',
@@ -643,7 +643,7 @@ class Search extends playlist_object
         );
 
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'bitrate',
             'label' => T_('Bitrate'),
             'type' => 'numeric',
@@ -670,42 +670,42 @@ class Search extends playlist_object
 
         $this->populate_last_play_field();
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'played',
             'label' => T_('Played'),
             'type' => 'boolean',
             'widget' => array('input', 'hidden')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'myplayed',
             'label' => T_('Played by Me'),
             'type' => 'boolean',
             'widget' => array('input', 'hidden')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'myplayedalbum',
             'label' => T_('Played by Me (Album)'),
             'type' => 'boolean',
             'widget' => array('input', 'hidden')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'myplayedartist',
             'label' => T_('Played by Me (Artist)'),
             'type' => 'boolean',
             'widget' => array('input', 'hidden')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'added',
             'label' => T_('Added'),
             'type' => 'date',
             'widget' => array('input', 'datetime-local')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'updated',
             'label' => T_('Updated'),
             'type' => 'date',
@@ -732,7 +732,7 @@ class Search extends playlist_object
             $catalog->format();
             $catalogs[$catid] = $catalog->f_name;
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'catalog',
             'label' => T_('Catalog'),
             'type' => 'boolean_numeric',
@@ -745,7 +745,7 @@ class Search extends playlist_object
             $playlist->format(false);
             $playlists[$playlistid] = $playlist->f_name;
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'playlist',
             'label' => T_('Playlist'),
             'type' => 'boolean_numeric',
@@ -757,26 +757,26 @@ class Search extends playlist_object
             $user           = new User($userid);
             $users[$userid] = $user->username;
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'other_user',
             'label' => T_('Another User'),
             'type' => 'user_numeric',
             'widget' => array('select', $users)
         );
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'other_user_album',
             'label' => T_('Another User (Album)'),
             'type' => 'user_numeric',
             'widget' => array('select', $users)
         );
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'other_user_artist',
             'label' => T_('Another User (Artist)'),
             'type' => 'user_numeric',
             'widget' => array('select', $users)
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'playlist_name',
             'label' => T_('Playlist Name'),
             'type' => 'text',
@@ -790,7 +790,7 @@ class Search extends playlist_object
             // a vicious loop.
             $playlists[$playlistid] = Search::get_name_byid($playlistid);
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'smartplaylist',
             'label' => T_('Smart Playlist'),
             'type' => 'boolean_subsearch',
@@ -802,7 +802,7 @@ class Search extends playlist_object
         foreach ($metadataFieldRepository->findAll() as $metadata) {
             $metadataFields[$metadata->getId()] = $metadata->getName();
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'metadata',
             'label' => T_('Metadata'),
             'type' => 'multiple',
@@ -816,7 +816,7 @@ class Search extends playlist_object
             $licenses[$license_id] = $license->name;
         }
         if (AmpConfig::get('licensing')) {
-            $this->fields[] = array(
+            $this->searchfields[] = array(
                 'name' => 'license',
                 'label' => T_('Music License'),
                 'type' => 'boolean_numeric',
@@ -832,13 +832,13 @@ class Search extends playlist_object
      */
     private function populate_artist_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'title',
             'label' => T_('Name'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'yearformed',
             'label' => T_('Year'),
             'type' => 'numeric',
@@ -848,13 +848,13 @@ class Search extends playlist_object
             $this->populate_myrating_field();
             $this->populate_rating_field();
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'placeformed',
             'label' => T_('Place'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'tag',
             'label' => T_('Tag'),
             'type' => 'tags',
@@ -870,7 +870,7 @@ class Search extends playlist_object
             $user           = new User($userid);
             $users[$userid] = $user->username;
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'other_user',
             'label' => T_('Another User'),
             'type' => 'user_numeric',
@@ -891,21 +891,21 @@ class Search extends playlist_object
      */
     private function populate_album_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'title',
             'label' => T_('Title'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'artist',
             'label' => T_('Artist'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'year',
             'label' => T_('Year'),
             'type' => 'numeric',
@@ -930,14 +930,14 @@ class Search extends playlist_object
             $user           = new User($userid);
             $users[$userid] = $user->username;
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'other_user',
             'label' => T_('Another User'),
             'type' => 'user_numeric',
             'widget' => array('select', $users)
         );
 
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'tag',
             'label' => T_('Tag'),
             'type' => 'tags',
@@ -950,7 +950,7 @@ class Search extends playlist_object
             $catalog->format();
             $catalogs[$catid] = $catalog->f_name;
         }
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'catalog',
             'label' => T_('Catalog'),
             'type' => 'boolean_numeric',
@@ -968,7 +968,7 @@ class Search extends playlist_object
      */
     private function populate_video_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'filename',
             'label' => T_('Filename'),
             'type' => 'text',
@@ -983,7 +983,7 @@ class Search extends playlist_object
      */
     private function populate_playlist_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'title',
             'label' => T_('Name'),
             'type' => 'text',
@@ -998,13 +998,13 @@ class Search extends playlist_object
      */
     private function populate_label_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'title',
             'label' => T_('Name'),
             'type' => 'text',
             'widget' => array('input', 'text')
         );
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'category',
             'label' => T_('Category'),
             'type' => 'text',
@@ -1019,7 +1019,7 @@ class Search extends playlist_object
      */
     private function populate_user_fields()
     {
-        $this->fields[] = array(
+        $this->searchfields[] = array(
             'name' => 'username',
             'label' => T_('Username'),
             'type' => 'text',
@@ -1304,17 +1304,17 @@ class Search extends playlist_object
     }
 
     /**
-     * name_to_fieldtype
+     * get_field_datatype
      *
      * Iterates over our array of search fields to find out the data type for
      * the passed string.
-     * @param $name
+     * @param $fieldname
      * @return string|false
      */
-    public function field_name_to_datatype($name)
+    public function get_searchfield_datatype($fieldname)
     {
-        foreach ($this->fields as $field) {
-            if ($field['name'] == $name) {
+        foreach ($this->searchfields as $field) {
+            if ($field['name'] == $fieldname) {
                 return $field['type'];
             }
         }
@@ -1333,20 +1333,20 @@ class Search extends playlist_object
     {
         $this->rules = array();
         foreach ($data as $rule => $search_field) {
-            if ($search_field == 'name' && preg_match('/^rule_[0|1|2|3|4|5|6|7|8|9]*$/', $rule)) {
+            if ($search_field == 'name' && preg_match('/^rule_\d*$/', $rule)) {
                 $search_field = 'title';
             }
-            $search_field_datatype = $this->field_name_to_datatype($search_field);
             if (preg_match('/^rule_(\d+)$/', $rule, $ruleID)) {
-                $ruleID         = (string) $ruleID[1];
-                $input_rule     = (string) $data['rule_' . $ruleID . '_input'];
-                $operator_index = $data[ 'rule_' . $ruleID . '_operator'];
-                foreach (explode('|', $input_rule) as $input) {
+                $ruleID                = (string) $ruleID[1];
+                $input                 = (string) $data['rule_' . $ruleID . '_input'];
+                $operator_index        = $data[ "rule_" . $ruleID . '_operator'];
+                $search_field_datatype = $this->get_searchfield_datatype($search_field);
+                //add rule for each value in input
+                foreach (explode('|', $input) as $value) {
                     $this->rules[] = array(
                         $search_field,
-                        //get the name of the search operator based on the current field and index
                         $this->operators[$search_field_datatype][$operator_index]['name'],
-                        $input,
+                        $value,
                         $data['rule_' . $ruleID . '_subtype']
                     );
                 }
@@ -1496,7 +1496,7 @@ class Search extends playlist_object
         $groupdisks  = AmpConfig::get('album_group');
 
         foreach ($this->rules as $rule) {
-            $type     = $this->field_name_to_datatype($rule[0]);
+            $type     = $this->get_searchfield_datatype($rule[0]);
             $operator = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {
@@ -1724,7 +1724,7 @@ class Search extends playlist_object
         $join['tag']        = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->field_name_to_datatype($rule[0]);
+            $type     = $this->get_searchfield_datatype($rule[0]);
             $operator = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {
@@ -1919,7 +1919,7 @@ class Search extends playlist_object
         $join['tag'] = array();
 
         foreach ($this->rules as $rule) {
-            $type          = $this->field_name_to_datatype($rule[0]);
+            $type          = $this->get_searchfield_datatype($rule[0]);
             $operator      = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {
@@ -2358,7 +2358,7 @@ class Search extends playlist_object
         $having = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->field_name_to_datatype($rule[0]);
+            $type     = $this->get_searchfield_datatype($rule[0]);
             $operator = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {
@@ -2424,7 +2424,7 @@ class Search extends playlist_object
         $having             = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->field_name_to_datatype($rule[0]);
+            $type     = $this->get_searchfield_datatype($rule[0]);
             $operator = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {
@@ -2503,7 +2503,7 @@ class Search extends playlist_object
         $join               = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->field_name_to_datatype($rule[0]);
+            $type     = $this->get_searchfield_datatype($rule[0]);
             $operator = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {
@@ -2557,7 +2557,7 @@ class Search extends playlist_object
         $join               = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->field_name_to_datatype($rule[0]);
+            $type     = $this->get_searchfield_datatype($rule[0]);
             $operator = array();
             foreach ($this->operators[$type] as $op) {
                 if ($op['name'] == $rule[1]) {

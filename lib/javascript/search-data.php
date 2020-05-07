@@ -50,7 +50,7 @@ Header('content-type: application/x-javascript');
 $search = new Search(null, Core::get_request('type'));
 
 echo 'var types = ';
-echo arrayToJSON($search->fields) . ";\n";
+echo arrayToJSON($search->searchfields) . ";\n";
 echo 'var basetypes = ';
 echo arrayToJSON($search->operators) . ";\n";
 echo 'removeIcon = \'<a href="javascript: void(0)">' . UI::get_icon('disable', T_('Remove')) . '</a>\';';
