@@ -1323,6 +1323,39 @@ class Search extends playlist_object
     }
 
     /**
+     * get_operator_index_by_name
+     *
+     * Gives the array index of the search operator for the given type and operator name.
+     * @param $type
+     * @param $name
+     * @return int|false
+     */
+    private function get_operator_index_by_name($type, $name)
+    {
+        foreach ($this->operators[$type] as $key => $operator) {
+            if ($operator['name'] == $name) {
+                return $key;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * get_operator_by_name
+     *
+     * Return an array with the definition of the search operator for the given type and operator name.
+     * @param $type
+     * @param $name
+     * @return array
+     */
+    private function get_operator_by_name($type, $name)
+    {
+        $index = $this->get_operator_index_by_name($type, $name);
+        if ($index !== false) return $this->operators[$index];
+        else return array();
+    }
+
+    /**
      * add_rule
      *
      * Add rule to rules array
@@ -1335,10 +1368,10 @@ class Search extends playlist_object
     {
         if (!is_array($this->rules)) $this->rules = array();
         $this->rules[] = array(
-            $search_field,
-            $operator_name,
-            $value,
-            $subtype
+            'field'    => $search_field,
+            'operator' => $operator_name,
+            'value'    => $value,
+            'subtype'  => $subtype
         );
     }
 
@@ -1413,8 +1446,8 @@ class Search extends playlist_object
         $js = "";
         foreach ($this->rules as $rule) {
             $js .= '<script>' .
-                'SearchRow.add("' . $rule[0] . '","' .
-                $rule[1] . '","' . $rule[2] . '", "' . $rule[3] . '"); </script>';
+                'SearchRow.add("' . $rule['field'] . '","' .
+                $rule['operator'] . '","' . $rule['value'] . '", "' . $rule['subtype'] . '"); </script>';
         }
 
         return $js;
@@ -1496,6 +1529,25 @@ class Search extends playlist_object
         return $data;
     }
 
+
+    /**
+     * get_sql_vars_from_rule
+     *
+     * returns filtered input and the SQL comparison operator based on the given rule data
+     * @param array $rule
+     * @return array
+     */
+    private function get_sql_vars_from_rule($rule)
+    {
+        $type               = $this->get_searchfield_datatype($rule['field']);
+        $operator           = $this->get_operator_by_name($type, $rule['operator']);
+        $raw_input          = $this->_mangle_data($rule['value'], $type, $operator);
+        $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+        $sql_match_operator = $operator['sql'];
+
+        return array($input, $sql_match_operator);
+    }
+
     /**
      * album_to_sql
      *
@@ -1516,17 +1568,7 @@ class Search extends playlist_object
         $groupdisks  = AmpConfig::get('album_group');
 
         foreach ($this->rules as $rule) {
-            $type     = $this->get_searchfield_datatype($rule[0]);
-            $operator = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
             if ($groupdisks) {
                 $group[] = "`album`.`prefix`";
                 $group[] = "`album`.`name`";
@@ -1537,7 +1579,7 @@ class Search extends playlist_object
                 $group[] = "`album`.`id`";
             }
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'title':
                     $where[] = "(`album`.`name` $sql_match_operator '$input' " .
                                 " OR LTRIM(CONCAT(COALESCE(`album`.`prefix`, ''), " .
@@ -1744,19 +1786,9 @@ class Search extends playlist_object
         $join['tag']        = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->get_searchfield_datatype($rule[0]);
-            $operator = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'title':
                 case 'name':
                     $where[] = "(`artist`.`name` $sql_match_operator '$input' " .
@@ -1939,21 +1971,11 @@ class Search extends playlist_object
         $join['tag'] = array();
 
         foreach ($this->rules as $rule) {
-            $type          = $this->get_searchfield_datatype($rule[0]);
-            $operator      = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
             $addition_string    = '';
             $update_string      = '';
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'anywhere':
                     $where[]           = "((`artist`.`name` $sql_match_operator '$input' OR LTRIM(CONCAT(COALESCE(`artist`.`prefix`, ''), ' ', `artist`.`name`)) $sql_match_operator '$input') OR " .
                                          "(`album`.`name` $sql_match_operator '$input' OR LTRIM(CONCAT(COALESCE(`album`.`prefix`, ''), ' ', `album`.`name`)) $sql_match_operator '$input') OR " .
@@ -2204,7 +2226,7 @@ class Search extends playlist_object
                 case 'metadata':
                     // Need to create a join for every field so we can create and / or queries with only one table
                     $tableAlias         = 'metadata' . uniqid();
-                    $field              = (int) $rule[3];
+                    $field              = (int) $rule['subtype'];
                     $join[$tableAlias]  = true;
                     $parsedInput        = is_numeric($input) ? $input : '"' . $input . '"';
                     $where[]            = "(`$tableAlias`.`field` = {$field} AND `$tableAlias`.`data` $sql_match_operator $parsedInput)";
@@ -2378,19 +2400,9 @@ class Search extends playlist_object
         $having = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->get_searchfield_datatype($rule[0]);
-            $operator = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'filename':
                     $where[] = "`video`.`file` $sql_match_operator '$input'";
                 break;
@@ -2444,21 +2456,11 @@ class Search extends playlist_object
         $having             = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->get_searchfield_datatype($rule[0]);
-            $operator = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
 
             $where[] = "`playlist`.`type` = 'public'";
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'title':
                 case 'name':
                     $where[] = "`playlist`.`name` $sql_match_operator '$input'";
@@ -2523,19 +2525,9 @@ class Search extends playlist_object
         $join               = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->get_searchfield_datatype($rule[0]);
-            $operator = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'title':
                 case 'name':
                     $where[] = "`label`.`name` $sql_match_operator '$input'";
@@ -2577,19 +2569,9 @@ class Search extends playlist_object
         $join               = array();
 
         foreach ($this->rules as $rule) {
-            $type     = $this->get_searchfield_datatype($rule[0]);
-            $operator = array();
-            foreach ($this->operators[$type] as $op) {
-                if ($op['name'] == $rule[1]) {
-                    $operator = $op;
-                    break;
-                }
-            }
-            $raw_input          = $this->_mangle_data($rule[2], $type, $operator);
-            $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            $sql_match_operator = $operator['sql'];
+            list($input, $sql_match_operator) = $this->get_sql_vars_from_rule($rule);
 
-            switch ($rule[0]) {
+            switch ($rule['field']) {
                 case 'username':
                     $where[] = "`user`.`username` $sql_match_operator '$input'";
                 break;
