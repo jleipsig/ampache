@@ -1304,7 +1304,7 @@ class Search extends playlist_object
     }
 
     /**
-     * get_field_datatype
+     * get_searchfield_datatype
      *
      * Iterates over our array of search fields to find out the data type for
      * the passed string.
