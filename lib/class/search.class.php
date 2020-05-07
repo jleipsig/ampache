@@ -1348,10 +1348,10 @@ class Search extends playlist_object
      * @param $name
      * @return array
      */
-    private function get_operator_by_name($type, $name)
+    private function get_operator_array_by_name($type, $name)
     {
         $index = $this->get_operator_index_by_name($type, $name);
-        if ($index !== false) return $this->operators[$index];
+        if ($index !== false) return $this->operators[$type][$index];
         else return array();
     }
 
@@ -1540,7 +1540,7 @@ class Search extends playlist_object
     private function get_sql_vars_from_rule($rule)
     {
         $type               = $this->get_searchfield_datatype($rule['field']);
-        $operator           = $this->get_operator_by_name($type, $rule['operator']);
+        $operator           = $this->get_operator_array_by_name($type, $rule['operator']);
         $raw_input          = $this->_mangle_data($rule['value'], $type, $operator);
         $input              = filter_var($raw_input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
         $sql_match_operator = $operator['sql'];
