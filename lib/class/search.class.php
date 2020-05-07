@@ -1323,6 +1323,26 @@ class Search extends playlist_object
     }
 
     /**
+     * add_rule
+     *
+     * Add rule to rules array
+     * @param string $search_field
+     * @param string $operator_name
+     * @param string $value
+     * @param string $subtype
+     */
+    private function add_rule($search_field, $operator_name, $value, $subtype=null)
+    {
+        if (!is_array($this->rules)) $this->rules = array();
+        $this->rules[] = array(
+            $search_field,
+            $operator_name,
+            $value,
+            $subtype
+        );
+    }
+
+    /**
      * parse_rules
      *
      * Takes an array of sanitized search data from the form and generates
@@ -1331,7 +1351,6 @@ class Search extends playlist_object
      */
     public function parse_rules($data)
     {
-        $this->rules = array();
         foreach ($data as $rule => $search_field) {
             if ($search_field == 'name' && preg_match('/^rule_\d*$/', $rule)) {
                 $search_field = 'title';
@@ -1339,15 +1358,16 @@ class Search extends playlist_object
             if (preg_match('/^rule_(\d+)$/', $rule, $ruleID)) {
                 $ruleID                = (string) $ruleID[1];
                 $input                 = (string) $data['rule_' . $ruleID . '_input'];
-                $operator_index        = $data[ "rule_" . $ruleID . '_operator'];
+                $operator_index        = $data[ 'rule_' . $ruleID . '_operator'];
+                $subtype               = $data[ 'rule_' . $ruleID . '_subtype'];
                 $search_field_datatype = $this->get_searchfield_datatype($search_field);
                 //add rule for each value in input
                 foreach (explode('|', $input) as $value) {
-                    $this->rules[] = array(
+                    $this->add_rule(
                         $search_field,
                         $this->operators[$search_field_datatype][$operator_index]['name'],
                         $value,
-                        $data['rule_' . $ruleID . '_subtype']
+                        $subtype
                     );
                 }
             }
