@@ -1366,7 +1366,6 @@ class Search extends playlist_object
      */
     private function add_rule($search_field, $operator_name, $value, $subtype=null)
     {
-        if (!is_array($this->rules)) $this->rules = array();
         $this->rules[] = array(
             'field'    => $search_field,
             'operator' => $operator_name,
@@ -1384,6 +1383,7 @@ class Search extends playlist_object
      */
     public function parse_rules($data)
     {
+        $this->rules = array();
         foreach ($data as $rule => $search_field) {
             if ($search_field == 'name' && preg_match('/^rule_\d*$/', $rule)) {
                 $search_field = 'title';
